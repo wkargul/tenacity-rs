@@ -35,6 +35,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Pin Python 3.12 — PyO3 0.21 supports up to 3.12; runners may have 3.14
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Build Linux wheels
         if: matrix.platform == 'linux'
         uses: PyO3/maturin-action@v1
