@@ -35,12 +35,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Pin Python 3.12 — PyO3 0.21 supports up to 3.12; runners may have 3.14
+      # Pin Python 3.12 — PyO3 0.21 supports up to 3.12; macOS/Windows runners have 3.14
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      # Force Python 3.12 — maturin-action can still see system 3.14 otherwise
       - name: Build Linux wheels
         if: matrix.platform == 'linux'
         uses: PyO3/maturin-action@v1
@@ -49,28 +48,28 @@ jobs:
           args: --release --out dist -i python3.12
           manylinux: 2_17
 
+      # macOS/Windows: run maturin with explicit Python 3.12 (maturin-action ignores -i)
       - name: Build macOS wheels (x64)
         if: matrix.platform == 'macos-x64'
-        uses: PyO3/maturin-action@v1
-        with:
-          command: build
-          args: --release --out dist -i python3.12
-          target: ${{ matrix.target }}
+        run: |
+          pip install maturin
+          export PYO3_PYTHON="$(which python3.12)" PYTHON_SYS_EXECUTABLE="$(which python3.12)"
+          maturin build --release --out dist --target x86_64-apple-darwin
 
       - name: Build macOS wheels (arm64)
         if: matrix.platform == 'macos-arm64'
-        uses: PyO3/maturin-action@v1
-        with:
-          command: build
-          args: --release --out dist -i python3.12
-          target: ${{ matrix.target }}
+        run: |
+          pip install maturin
+          export PYO3_PYTHON="$(which python3.12)" PYTHON_SYS_EXECUTABLE="$(which python3.12)"
+          maturin build --release --out dist --target aarch64-apple-darwin
 
       - name: Build Windows wheels
         if: matrix.platform == 'windows'
-        uses: PyO3/maturin-action@v1
-        with:
-          command: build
-          args: --release --out dist -i python3.12
+        shell: bash
+        run: |
+          pip install maturin
+          export PYO3_PYTHON="$(which python)" PYTHON_SYS_EXECUTABLE="$(which python)"
+          maturin build --release --out dist
 
       - name: Build sdist
         if: matrix.platform == 'sdist'
