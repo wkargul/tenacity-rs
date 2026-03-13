@@ -31,19 +31,21 @@ jobs:
         with:
           workspaces: "."
 
-      - name: Install maturin and build
+      - name: Create venv and install maturin
         run: |
+          python -m venv .venv
+          . .venv/bin/activate
           pip install maturin
           maturin develop --release
 
       - name: Install test dependencies
-        run: pip install -e ".[test]"
+        run: . .venv/bin/activate && pip install -e ".[test]"
 
       - name: Run Rust tests
         run: cargo test
 
       - name: Run Python tests
-        run: pytest tests/ -v
+        run: . .venv/bin/activate && pytest tests/ -v
 
   lint:
     runs-on: ubuntu-latest
