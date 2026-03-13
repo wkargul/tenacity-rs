@@ -40,6 +40,15 @@ jobs:
         with:
           python-version: "3.12"
 
+      # Rust needed for macOS/Windows (maturin run steps); Linux uses maturin-action's container
+      - uses: dtolnay/rust-toolchain@stable
+        if: matrix.platform != 'linux' && matrix.platform != 'sdist'
+
+      # macOS runner is arm64 — need target to cross-compile to x86_64
+      - name: Add x86_64-apple-darwin target
+        if: matrix.platform == 'macos-x64'
+        run: rustup target add x86_64-apple-darwin
+
       - name: Build Linux wheels
         if: matrix.platform == 'linux'
         uses: PyO3/maturin-action@v1
