@@ -1,0 +1,100 @@
+# Publish tenacity-rs to PyPI when a GitHub Release is created.
+# Uses PyPI Trusted Publishing (OIDC) — no API token secret needed.
+# Configure the trusted publisher on PyPI: owner wkargul, repo tenacity-rs, workflow release.yml.
+
+name: Release to PyPI
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux
+            runner: ubuntu-22.04
+          - platform: macos-x64
+            runner: macos-14
+            target: x86_64-apple-darwin
+          - platform: macos-arm64
+            runner: macos-14
+            target: aarch64-apple-darwin
+          - platform: windows
+            runner: windows-latest
+          - platform: sdist
+            runner: ubuntu-22.04
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Linux wheels
+        if: matrix.platform == 'linux'
+        uses: PyO3/maturin-action@v1
+        with:
+          command: build
+          args: --release --out dist
+          manylinux: 2_17
+
+      - name: Build macOS wheels (x64)
+        if: matrix.platform == 'macos-x64'
+        uses: PyO3/maturin-action@v1
+        with:
+          command: build
+          args: --release --out dist
+          target: ${{ matrix.target }}
+
+      - name: Build macOS wheels (arm64)
+        if: matrix.platform == 'macos-arm64'
+        uses: PyO3/maturin-action@v1
+        with:
+          command: build
+          args: --release --out dist
+          target: ${{ matrix.target }}
+
+      - name: Build Windows wheels
+        if: matrix.platform == 'windows'
+        uses: PyO3/maturin-action@v1
+        with:
+          command: build
+          args: --release --out dist
+
+      - name: Build sdist
+        if: matrix.platform == 'sdist'
+        uses: PyO3/maturin-action@v1
+        with:
+          command: sdist
+          args: --out dist
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.platform }}
+          path: dist
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # required for PyPI Trusted Publishing (OIDC)
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
+          verbose: true

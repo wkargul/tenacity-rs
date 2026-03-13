@@ -1,0 +1,44 @@
+[build-system]
+requires = ["maturin>=1.4,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "tenacity-rs"
+version = "0.1.0"
+description = "Drop-in replacement for tenacity with a Rust core. Same API, faster retries."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.8"
+authors = [
+  { name = "Wojciech Kargul", email = "wojciech.kargul@gmail.com" },
+]
+keywords = ["retry", "tenacity", "resilience", "rust", "pyo3"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Rust",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+[project.urls]
+Homepage = "https://github.com/wkargul/tenacity-rs"
+Repository = "https://github.com/wkargul/tenacity-rs"
+Documentation = "https://github.com/wkargul/tenacity-rs#readme"
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-asyncio"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.maturin]
+python-source = "python"
+module-name = "tenacity_rs.tenacity_rs"

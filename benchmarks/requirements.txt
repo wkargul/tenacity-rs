@@ -1,0 +1,3 @@
+# For comparison benchmarks: install both tenacity and tenacity-rs
+tenacity>=8.0.0
+# tenacity-rs: install from project root with: pip install -e .

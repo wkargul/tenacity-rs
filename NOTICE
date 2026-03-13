@@ -1,0 +1,14 @@
+tenacity-rs
+Copyright (c) 2025 Wojciech Kargul
+
+This project is licensed under the MIT License. See the LICENSE file.
+
+---
+
+This project is an independent reimplementation of the API of tenacity.
+No source code from tenacity has been copied into this repository.
+
+tenacity (https://github.com/jd/tenacity)
+Copyright (c) Julien Danjou and contributors.
+Licensed under the Apache License, Version 2.0.
+See https://github.com/jd/tenacity/blob/main/LICENSE
