@@ -40,12 +40,13 @@ jobs:
         with:
           python-version: "3.12"
 
+      # Force Python 3.12 — maturin-action can still see system 3.14 otherwise
       - name: Build Linux wheels
         if: matrix.platform == 'linux'
         uses: PyO3/maturin-action@v1
         with:
           command: build
-          args: --release --out dist
+          args: --release --out dist -i python3.12
           manylinux: 2_17
 
       - name: Build macOS wheels (x64)
@@ -53,7 +54,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           command: build
-          args: --release --out dist
+          args: --release --out dist -i python3.12
           target: ${{ matrix.target }}
 
       - name: Build macOS wheels (arm64)
@@ -61,7 +62,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           command: build
-          args: --release --out dist
+          args: --release --out dist -i python3.12
           target: ${{ matrix.target }}
 
       - name: Build Windows wheels
@@ -69,7 +70,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           command: build
-          args: --release --out dist
+          args: --release --out dist -i python3.12
 
       - name: Build sdist
         if: matrix.platform == 'sdist'
